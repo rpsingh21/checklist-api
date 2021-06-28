@@ -34,12 +34,12 @@ func main() {
 
 	sugar := logger.Sugar()
 	go func() {
+		sugar.Infof("Starting server on %s", serverAddress)
 		if err := server.ListenAndServe(); err != nil {
 			sugar.Debugf("Shutdown server due to %v", err)
 		}
 	}()
 
-	sugar.Infof("Starting server on %s", serverAddress)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
