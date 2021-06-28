@@ -33,18 +33,18 @@ func main() {
 	}
 
 	sugar := logger.Sugar()
-	func() {
-		sugar.Infof("Start server on %s", serverAddress)
+	go func() {
 		if err := server.ListenAndServe(); err != nil {
 			sugar.Debugf("Shutdown server due to %v", err)
 		}
 	}()
 
+	sugar.Infof("Starting server on %s", serverAddress)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	sig := <-c
-	sugar.Infof("Go a Ingrap signal %v", sig)
+	sugar.Infof("Got interupt signal %v", sig)
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
