@@ -1,4 +1,4 @@
-package models
+package model
 
 // Profile model object
 type Profile struct {
