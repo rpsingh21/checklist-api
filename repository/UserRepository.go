@@ -2,12 +2,19 @@ package repository
 
 import (
 	"github.com/rpsingh21/checklist-api/model"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )
 
 // UserRepository object
 type UserRepository struct {
-	logger *zap.Logger
+	logger *zap.SugaredLogger
+	db     *mongo.Database
+}
+
+// NewUserRepository new object
+func NewUserRepository(logger *zap.SugaredLogger, db *mongo.Database) *UserRepository {
+	return &UserRepository{logger: logger, db: db}
 }
 
 // Get method for return all object
