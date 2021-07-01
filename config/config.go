@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -15,6 +16,10 @@ type Config struct {
 func (config *Config) initialize() {
 	// read environment variables
 	config.ServerHost = os.Getenv("serverHost")
+	if config.ServerHost == "" {
+		config.ServerHost = fmt.Sprintf("0.0.0.0:%s", os.Getenv("PORT"))
+		fmt.Printf("Not sount serverHost => %s", config.ServerHost)
+	}
 	config.MongoConnectionURI = os.Getenv("mongoConnectionURI")
 	config.DatabaseName = os.Getenv("databaseName")
 }
