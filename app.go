@@ -89,10 +89,10 @@ func (app *App) Run() {
 }
 
 // Shutdown application
-func (app *App) Shutdown(ctx *context.Context) {
+func (app *App) Shutdown(ctx context.Context) {
 	app.logger.Info("Shutdown application .....")
-	app.server.Shutdown(*ctx)
-	app.DB.Client().Disconnect(*ctx)
+	app.server.Shutdown(ctx)
+	app.DB.Client().Disconnect(ctx)
 	app.logger.Info("Shutdown application done")
 }
 
