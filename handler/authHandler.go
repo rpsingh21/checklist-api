@@ -5,6 +5,7 @@ import (
 
 	"github.com/rpsingh21/checklist-api/model"
 	"github.com/rpsingh21/checklist-api/repository"
+	"github.com/rpsingh21/checklist-api/utils"
 	"go.uber.org/zap"
 )
 
@@ -27,17 +28,28 @@ func (ah *AuthHandler) Create(rw http.ResponseWriter, r *http.Request) {
 		ErrorResponseWriter(rw, http.StatusInternalServerError, err)
 		return
 	}
+	if err := user.Validate(); err != nil {
+		ah.logger.Errorf("Validation faild : %v", err)
+		ErrorResponseWriter(rw, http.StatusBadRequest, err)
+		return
+	}
+	hs, err := utils.HashPassword(user.Password)
+	if err != nil {
+		ah.logger.Errorf("Hash pasword faild %v", err)
+		ErrorResponseWriter(rw, http.StatusInternalServerError, err)
+		return
+	}
+	user.SetPassword(hs)
 	if err := ah.userRopo.Create(user); err != nil {
 		ah.logger.Errorf("Faild to create new user %v", user)
 		ErrorResponseWriter(rw, http.StatusInternalServerError, err)
 		return
 	}
-
+	user.SetPassword("")
 	ResponseWriter(rw, http.StatusCreated, "", *user)
 }
 
 // Get List of all user
 func (ah *AuthHandler) Get(rw http.ResponseWriter, r *http.Request) {
-
 	ResponseWriter(rw, http.StatusOK, "Hello golang", nil)
 }

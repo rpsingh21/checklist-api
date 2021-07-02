@@ -4,8 +4,11 @@ go 1.16
 
 require (
 	github.com/aws/aws-sdk-go v1.38.69 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/klauspost/compress v1.13.1 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.5.3 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
