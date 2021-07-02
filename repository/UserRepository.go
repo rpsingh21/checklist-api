@@ -1,20 +1,26 @@
 package repository
 
 import (
+	"context"
+
+	"github.com/rpsingh21/checklist-api/config"
 	"github.com/rpsingh21/checklist-api/model"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.uber.org/zap"
 )
 
 // UserRepository object
 type UserRepository struct {
-	logger *zap.SugaredLogger
-	db     *mongo.Database
+	db         *mongo.Database
+	Collection *mongo.Collection
 }
 
 // NewUserRepository new object
-func NewUserRepository(logger *zap.SugaredLogger, db *mongo.Database) *UserRepository {
-	return &UserRepository{logger: logger, db: db}
+func NewUserRepository(db *mongo.Database) *UserRepository {
+	return &UserRepository{
+		db:         db,
+		Collection: db.Collection(config.UserCollection),
+	}
 }
 
 // Get method for return all object
@@ -23,8 +29,13 @@ func (ur *UserRepository) Get() []model.User {
 }
 
 // Create method to create new entry
-func (ur *UserRepository) Create(u *model.User) (model.User, error) {
-	return *u, nil
+func (ur *UserRepository) Create(u *model.User) error {
+	result, err := ur.Collection.InsertOne(context.TODO(), u)
+	if err != nil {
+		return err
+	}
+	u.ID = result.InsertedID.(primitive.ObjectID)
+	return nil
 }
 
 // Update method to update entry

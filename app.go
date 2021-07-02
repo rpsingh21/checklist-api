@@ -93,18 +93,18 @@ func (app *App) Shutdown(ctx context.Context) {
 	app.logger.Info("Shutdown application .....")
 	app.server.Shutdown(ctx)
 	app.DB.Client().Disconnect(ctx)
-	app.logger.Info("Shutdown application done")
 }
 
 func (app *App) setRouter() {
-	ah := handler.NewAuthHandler(app.logger, repository.NewUserRepository(app.logger, app.DB))
-	app.Router.HandleFunc("/", ah.ServeHTTP).Methods(http.MethodGet)
+	userRopo := repository.NewUserRepository(app.DB)
+	ah := handler.NewAuthHandler(app.logger, userRopo)
+	app.Router.HandleFunc("/auth", ah.Get).Methods(http.MethodGet)
+	app.Router.HandleFunc("/auth", ah.Create).Methods(http.MethodPost)
 }
 
 func (app *App) createIndex() {
 	keys := bsonx.Doc{
 		{Key: "username", Value: bsonx.Int32(1)},
-		{Key: "email", Value: bsonx.Int32(1)},
 	}
 	user := app.DB.Collection("user")
 	database.SetIndexes(user, keys)

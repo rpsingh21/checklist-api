@@ -17,3 +17,11 @@ func ResponseWriter(rw http.ResponseWriter, statusCode int, message string, data
 	httpResponse := json.NewEncoder(rw).Encode(data)
 	return httpResponse
 }
+
+// ErrorResponseWriter return error meaage
+func ErrorResponseWriter(rw http.ResponseWriter, statusCode int, err error) error {
+	rw.WriteHeader(statusCode)
+	message := err.Error()
+	data := model.NewResponse(statusCode, message, nil)
+	return json.NewEncoder(rw).Encode(data)
+}
