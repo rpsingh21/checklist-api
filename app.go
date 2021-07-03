@@ -10,6 +10,7 @@ import (
 	"github.com/rpsingh21/checklist-api/database"
 	"github.com/rpsingh21/checklist-api/handler"
 	"github.com/rpsingh21/checklist-api/repository"
+	"github.com/rpsingh21/checklist-api/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 	"go.uber.org/zap"
@@ -22,6 +23,7 @@ type App struct {
 	server *http.Server
 	Router *mux.Router
 	DB     *mongo.Database
+	JWT    *utils.JWToken
 }
 
 // ConfigApp setup app
@@ -36,8 +38,11 @@ func (app *App) Initialize(config *config.Config) {
 	app.DB = database.NewDBConnection(config.DatabaseName, config.MongoConnectionURI)
 	app.createIndex()
 
+	app.JWT = utils.NewJWToken(time.Duration(config.ExpirationDuration), config.SecretKey)
+
 	app.Router = mux.NewRouter()
 	app.UseMiddleware(handler.JSONContentTypeMiddleware)
+	app.UseMiddleware(handler.JWTAuthMiddleware)
 	app.setRouter()
 
 	app.server = &http.Server{
@@ -97,9 +102,10 @@ func (app *App) Shutdown(ctx context.Context) {
 
 func (app *App) setRouter() {
 	userRopo := repository.NewUserRepository(app.DB)
-	ah := handler.NewAuthHandler(app.logger, userRopo)
+	ah := handler.NewAuthHandler(app.logger, userRopo, app.JWT)
 	app.Router.HandleFunc("/auth", ah.Get).Methods(http.MethodGet)
 	app.Router.HandleFunc("/auth", ah.Create).Methods(http.MethodPost)
+	app.Router.HandleFunc("/auth/login", ah.Login).Methods(http.MethodPost)
 }
 
 func (app *App) createIndex() {

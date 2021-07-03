@@ -5,6 +5,7 @@ import (
 
 	"github.com/rpsingh21/checklist-api/config"
 	"github.com/rpsingh21/checklist-api/model"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -46,4 +47,13 @@ func (ur *UserRepository) Update(id string, u *model.User) (model.User, error) {
 // Delete methd to update entry
 func (ur *UserRepository) Delete(id string) (bool, error) {
 	return false, nil
+}
+
+// FindByUserName find user object ny username
+func (ur *UserRepository) FindByUserName(username string) (*model.User, error) {
+	user := &model.User{}
+	if err := ur.Collection.FindOne(context.TODO(), bson.M{"username": username}).Decode(user); err != nil {
+		return nil, err
+	}
+	return user, nil
 }
