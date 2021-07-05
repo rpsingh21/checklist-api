@@ -39,6 +39,20 @@ func (jw *JWToken) CreateToken(username string) (string, error) {
 	return token.SignedString(jw.secretKey)
 }
 
-// func check(token)  {
-
-// }
+// GetClaims return all claims
+func (jw *JWToken) GetClaims(tokenStr string) (*Claims, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+		return t, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, jwt.NewValidationError("Token Validation Error Malformed", jwt.ValidationErrorMalformed)
+	}
+	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 0*time.Second {
+		return nil, jwt.NewValidationError("Token Expired", jwt.ValidationErrorExpired)
+	}
+	return claims, nil
+}

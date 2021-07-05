@@ -42,7 +42,7 @@ func (app *App) Initialize(config *config.Config) {
 
 	app.Router = mux.NewRouter()
 	app.UseMiddleware(handler.JSONContentTypeMiddleware)
-	app.UseMiddleware(handler.JWTAuthMiddleware)
+	app.UseMiddleware(handler.JWTAuthMiddleware(app.JWT))
 	app.setRouter()
 
 	app.server = &http.Server{
