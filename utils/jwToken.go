@@ -28,7 +28,7 @@ func NewJWToken(expirationDuration time.Duration, secretKey string) *JWToken {
 
 // CreateToken genrate new toekn for spacfic user
 func (jw *JWToken) CreateToken(username string) (string, error) {
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(jw.expirationDuration)
 	claims := &Claims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
@@ -42,17 +42,11 @@ func (jw *JWToken) CreateToken(username string) (string, error) {
 // GetClaims return all claims
 func (jw *JWToken) GetClaims(tokenStr string) (*Claims, error) {
 	claims := &Claims{}
-	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
-		return t, nil
+	_, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+		return jw.secretKey, nil
 	})
 	if err != nil {
 		return nil, err
-	}
-	if !token.Valid {
-		return nil, jwt.NewValidationError("Token Validation Error Malformed", jwt.ValidationErrorMalformed)
-	}
-	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 0*time.Second {
-		return nil, jwt.NewValidationError("Token Expired", jwt.ValidationErrorExpired)
 	}
 	return claims, nil
 }
