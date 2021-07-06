@@ -9,4 +9,4 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /go/src/github.com/rpsingh21/checklist-api/app .
 
-CMD ./app 0.0.0.0:$PORT
+CMD ./app $PORT
