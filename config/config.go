@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 // Config is the server configuration structure.
 type Config struct {
-	ServerHost         string // address that server will listening on
-	MongoConnectionURI string // mongo db connection uri
-	DatabaseName       string // mongo db database name
-	SecretKey          string // JWT SecretKey
-	ExpirationDuration int    // JWT ExpirationDuration
+	ServerHost         string        // address that server will listening on
+	MongoConnectionURI string        // mongo db connection uri
+	DatabaseName       string        // mongo db database name
+	SecretKey          string        // JWT SecretKey
+	ExpirationDuration time.Duration // JWT ExpirationDuration
 }
 
 // initialize will read environment variables and save them in config structure fields
@@ -28,9 +29,9 @@ func (config *Config) initialize() {
 	config.SecretKey = os.Getenv("secretKey")
 
 	if dur, err := strconv.Atoi(os.Getenv("expirationDuration")); err == nil {
-		config.ExpirationDuration = dur
+		config.ExpirationDuration = time.Duration(dur) * time.Second
 	} else {
-		config.ExpirationDuration = 300
+		config.ExpirationDuration = 300 * time.Second
 	}
 }
 
