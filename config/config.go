@@ -21,8 +21,8 @@ func (config *Config) initialize() {
 	// read environment variables
 	config.ServerHost = os.Getenv("serverHost")
 	if config.ServerHost == "" {
-		config.ServerHost = fmt.Sprintf("0:%s", os.Getenv("PORT"))
-		fmt.Printf("Take HOST from $POSRT env variable => %s", config.ServerHost)
+		config.ServerHost = "0.0.0.0:" + os.Getenv("PORT")
+		fmt.Println("Take HOST from $POSRT env variable => ", config.ServerHost)
 	}
 	config.MongoConnectionURI = os.Getenv("mongoConnectionURI")
 	config.DatabaseName = os.Getenv("databaseName")
